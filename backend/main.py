@@ -9,6 +9,9 @@ from models import Recommendation, ChatMessage, UserProfile
 from database import engine, create_db_and_tables, get_session
 from ai_service import get_ai_response, analyze_interests, score_recommendations, get_chat_and_interests
 
+from fastapi.staticfiles import StaticFiles
+import os
+
 app = FastAPI(title="AuraAI - Enhanced")
 
 # Enable CORS
@@ -19,6 +22,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files at the end (moved after routes is better practice, but mount works)
+# We will do it after the routes are defined to ensure API routes take precedence.
 
 @app.on_event("startup")
 def on_startup():
@@ -156,6 +162,12 @@ async def get_recommendations(session: Session = Depends(get_session)):
         top_items.append(original_item)
         
     return top_items[:6]
+
+# Serve frontend static files
+# We check if the dir exists to avoid crashes in local dev if not built
+frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+if os.path.exists(frontend_dist):
+    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="static")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

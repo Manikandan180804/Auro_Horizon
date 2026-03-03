@@ -12,9 +12,11 @@ function App() {
     fetchRecommendations();
   }, []);
 
+  const API_URL = import.meta.env.VITE_API_URL || '';
+
   const fetchRecommendations = async () => {
     try {
-      const res = await fetch('http://localhost:8000/recommendations');
+      const res = await fetch(`${API_URL}/recommendations`);
       const data = await res.json();
       setRecommendations(data);
     } catch (err) {
@@ -31,7 +33,7 @@ function App() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/chat', {
+      const res = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ history: messages, message: input })
