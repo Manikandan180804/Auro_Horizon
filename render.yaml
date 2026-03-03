@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: auro-horizon
+    runtime: docker
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        value: sqlite:///./aura_ai.db
+      - key: PORT
+        value: 10000
